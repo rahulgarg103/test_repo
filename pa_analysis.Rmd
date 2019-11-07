@@ -1,0 +1,622 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  word_document: default
+---
+
+
+```{r}
+pa_dat<-read.csv("C:/Users/rahul/OneDrive/Desktop/sustainability/starsdata/planning and administration/planning and administration.csv")
+
+head(pa_dat)
+library(ggplot2)
+library(plotly)
+library(tidyr)
+library(dplyr)
+colnames(pa_dat)[colnames(pa_dat)=="ï..Institution"] <- "Institution"
+pa_dat
+
+pa_dat_reshaped<-pa_dat%>%gather(subcategory,value_percent,Sustainability.Coordination....:Workplace.Health.and.Safety....)
+pa_dat_reshaped
+
+
+```
+
+```{r}
+#Coordination and planning 
+pa_dat_cp<-pa_dat%>%select(Institution,Star.category,Sustainability.Coordination....:Inclusive.and.Participatory.Governance....)
+#pa_dat_cp
+
+pa_dat_cp_reshaped<-pa_dat_cp%>%
+  gather(cp_subcategory,value_percent,Sustainability.Coordination....:Inclusive.and.Participatory.Governance....)%>%
+   mutate(cp_sub_cat= NA,
+                    cp_sub_cat=ifelse(cp_subcategory=="Sustainability.Coordination....",
+                                    "PA1",
+                                   cp_sub_cat),
+           cp_sub_cat=ifelse(cp_subcategory=="Sustainability.Planning....",
+                                    "PA2",
+                                   cp_sub_cat),
+           cp_sub_cat=ifelse(cp_subcategory=="Inclusive.and.Participatory.Governance....",
+                                    "PA3",
+                                   cp_sub_cat)) %>%
+    mutate(star_cat=ifelse(Institution=="California State University, East Bay", "CSUEB",as.character(Star.category)))
+
+##View(pa_dat_cp_reshaped)
+pa_dat_cp_reshaped$star_cat <- factor(pa_dat_cp_reshaped$star_cat,
+                                               levels=c("bronze","silver","gold","CSUEB"))
+ggplot(pa_dat_cp_reshaped) +
+  geom_boxplot(aes(x=cp_sub_cat, y=value_percent), color="red") +
+  geom_jitter(aes(x=cp_sub_cat, y=value_percent, color=star_cat, shape=star_cat, size=star_cat)) +
+  scale_shape_manual(name="Star Rating",
+                     values=c("bronze"=1,
+                              "silver"=1,
+                              "gold"=1,
+                              "CSUEB"=4)) +
+    scale_size_manual(name="Star Rating",
+                     values=c("bronze"=3,
+                              "silver"=3,
+                              "gold"=3,
+                              "CSUEB"=4)) +
+    scale_color_manual(name="Star Rating",
+                     values=c("bronze"="orange",
+                              "silver"="purple",
+                              "gold"="darkred",
+                              "CSUEB"="#ff0000"))+
+  ggtitle("Coordination and planning")+
+  coord_flip()
+
+```
+
+```{r}
+#Diversity and Affordability 
+pa_dat_da<-pa_dat%>%select(Institution,Star.category,Diversity.and.Equity.Coordination....:Affordability.and.Access....)
+
+
+pa_dat_da_reshaped<-pa_dat_da%>%
+  gather(da_subcategory,value_percent,Diversity.and.Equity.Coordination....:Affordability.and.Access....)%>%
+    mutate(da_sub_cat= NA,
+         da_sub_cat=ifelse(da_subcategory=="Diversity.and.Equity.Coordination....",
+                                    "PA4",
+                                   da_sub_cat),
+         da_sub_cat=ifelse(da_subcategory=="Assessing.Diversity.and.Equity....",
+                                    "PA5",
+                                   da_sub_cat),
+         da_sub_cat=ifelse(da_subcategory=="Support.for.Underrepresented.Groups....",
+                                    "PA6",
+                                   da_sub_cat),
+                  da_sub_cat=ifelse(da_subcategory=="Affordability.and.Access....",
+                                    "PA7",
+                                   da_sub_cat)) %>%
+    mutate(star_cat=ifelse(Institution=="California State University, East Bay", "CSUEB",as.character(Star.category)))
+
+##View(pa_dat_da_reshaped)
+pa_dat_da_reshaped$star_cat <- factor(pa_dat_da_reshaped$star_cat,
+                                               levels=c("bronze","silver","gold","CSUEB"))
+ggplot(pa_dat_da_reshaped) +
+  geom_boxplot(aes(x=da_sub_cat, y=value_percent), color="red") +
+  geom_jitter(aes(x=da_sub_cat, y=value_percent, color=star_cat, shape=star_cat, size=star_cat)) +
+  scale_shape_manual(name="Star Rating",
+                     values=c("bronze"=1,
+                              "silver"=1,
+                              "gold"=1,
+                              "CSUEB"=4)) +
+    scale_size_manual(name="Star Rating",
+                     values=c("bronze"=3,
+                              "silver"=3,
+                              "gold"=3,
+                              "CSUEB"=4)) +
+    scale_color_manual(name="Star Rating",
+                     values=c("bronze"="orange",
+                              "silver"="purple",
+                              "gold"="darkred",
+                              "CSUEB"="#ff0000"))+
+  ggtitle("Diversity and Affordability")+
+  coord_flip()
+
+
+```
+
+```{r}
+#Investment and finance
+pa_dat_if<-pa_dat%>%select(Institution,Star.category,Committee.on.Investor.Responsibility....:Investment.Disclosure....)
+#pa_dat_if
+
+pa_dat_if_reshaped<-pa_dat_if%>%
+  gather(if_subcategory,value_percent,Committee.on.Investor.Responsibility....:Investment.Disclosure....)%>%
+  mutate(if_sub_cat= NA,
+                    if_sub_cat=ifelse(if_subcategory=="Committee.on.Investor.Responsibility....",
+                                    "PA8",
+                                   if_sub_cat),
+           if_sub_cat=ifelse(if_subcategory=="Sustainable.Investment....",
+                                    "PA9",
+                                   if_sub_cat),
+           if_sub_cat=ifelse(if_subcategory=="Investment.Disclosure....",
+                                    "PA10",
+                                   if_sub_cat))  %>%
+    mutate(star_cat=ifelse(Institution=="California State University, East Bay", "CSUEB",as.character(Star.category)))
+
+##View(pa_dat_if_reshaped)
+pa_dat_if_reshaped$star_cat <- factor(pa_dat_if_reshaped$star_cat,
+                                               levels=c("bronze","silver","gold","CSUEB"))
+ggplot(pa_dat_if_reshaped) +
+  geom_boxplot(aes(x=if_sub_cat, y=value_percent), color="red") +
+  geom_jitter(aes(x=if_sub_cat, y=value_percent, color=star_cat, shape=star_cat, size=star_cat)) +
+  scale_shape_manual(name="Star Rating",
+                     values=c("bronze"=1,
+                              "silver"=1,
+                              "gold"=1,
+                              "CSUEB"=4)) +
+    scale_size_manual(name="Star Rating",
+                     values=c("bronze"=3,
+                              "silver"=3,
+                              "gold"=3,
+                              "CSUEB"=4)) +
+    scale_color_manual(name="Star Rating",
+                     values=c("bronze"="orange",
+                              "silver"="purple",
+                              "gold"="darkred",
+                              "CSUEB"="#ff0000"))+
+  ggtitle("Investment and Finance")+
+  coord_flip()
+
+```
+
+```{r}
+#Wellbeing and Work
+pa_dat_ww<-pa_dat%>%select(Institution,Star.category,Employee.Compensation....:Workplace.Health.and.Safety....)
+#pa_dat_ww
+
+pa_dat_ww_reshaped<-pa_dat_ww%>%
+  gather(ww_subcategory,value_percent,Employee.Compensation....:Workplace.Health.and.Safety....)%>%
+  mutate(ww_sub_cat= NA,
+         ww_sub_cat=ifelse(ww_subcategory=="Employee.Compensation....",
+                                    "PA11",
+                                   ww_sub_cat),
+         ww_sub_cat=ifelse(ww_subcategory=="Assessing.Employee.Satisfaction....",
+                                    "PA12",
+                                   ww_sub_cat),
+         ww_sub_cat=ifelse(ww_subcategory=="Wellness.Program....",
+                                    "PA13",
+                                   ww_sub_cat),
+                  ww_sub_cat=ifelse(ww_subcategory=="Workplace.Health.and.Safety....",
+                                    "PA14",
+                                   ww_sub_cat)) %>%
+    mutate(star_cat=ifelse(Institution=="California State University, East Bay", "CSUEB",as.character(Star.category)))
+
+##View(pa_dat_ww_reshaped)
+pa_dat_ww_reshaped$star_cat <- factor(pa_dat_ww_reshaped$star_cat,
+                                               levels=c("bronze","silver","gold","CSUEB"))
+ggplot(pa_dat_ww_reshaped) +
+  geom_boxplot(aes(x=ww_sub_cat, y=value_percent), color="red") +
+  geom_jitter(aes(x=ww_sub_cat, y=value_percent, color=star_cat, shape=star_cat, size=star_cat)) +
+  scale_shape_manual(name="Star Rating",
+                     values=c("bronze"=1,
+                              "silver"=1,
+                              "gold"=1,
+                              "CSUEB"=4)) +
+    scale_size_manual(name="Star Rating",
+                     values=c("bronze"=3,
+                              "silver"=3,
+                              "gold"=3,
+                              "CSUEB"=4)) +
+    scale_color_manual(name="Star Rating",
+                     values=c("bronze"="orange",
+                              "silver"="purple",
+                              "gold"="darkred",
+                              "CSUEB"="#ff0000"))+
+  ggtitle("Wellbeing and Work")+  coord_flip()
+
+
+```
+#******************CI**************
+
+```{r}
+# Calculating C.I. for schools other than CSUEB and then comparing it with CSUEB
+
+###creating a data frame 
+subcategory<-NA
+CI_left<-NA
+CI_right<-NA
+CSUEB_val<-NA
+confinf_table<-data.frame(subcategory,CI_left,CI_right,CSUEB_val)
+
+
+#Coordination and planning**************
+
+cp_notCSUEB<-pa_dat_cp%>%
+filter(Institution!="California State University, East Bay")#change after category
+
+cp_CSUEB<-pa_dat_cp %>%
+filter(Institution=="California State University, East Bay")#change after category
+
+##Sustainability.Coordination....
+error_sc<- qt(0.95,df=length(cp_notCSUEB$Sustainability.Coordination....)-1)*sd(cp_notCSUEB$Sustainability.Coordination....)/sqrt(length(cp_notCSUEB$Sustainability.Coordination....))#change after subcategory
+
+left_sc <- mean(cp_notCSUEB$Sustainability.Coordination....)-error_sc ##change after subcategory
+
+right_sc<- mean(cp_notCSUEB$Sustainability.Coordination....)+error_sc ##change after subcategory
+
+
+
+##adding values for subcategory
+confinf_table_sc<-data.frame(subcategory="Sustainability_Coordination",CI_left=left_sc,CI_right=right_sc,CSUEB_val=cp_CSUEB$Sustainability.Coordination....)##change after subcategory
+
+##binding row in the data frame
+confinf_table<-rbind(confinf_table_sc,confinf_table)##change after subcategory
+
+##removing NA values 
+confinf_table<-confinf_table%>%filter(!is.na(subcategory))
+
+
+##Sustainability.Planning....
+error_sp<- qt(0.95,df=length(cp_notCSUEB$Sustainability.Planning....)-1)*sd(cp_notCSUEB$Sustainability.Planning....)/sqrt(length(cp_notCSUEB$Sustainability.Planning....))#change after subcategory
+
+left_sp <- mean(cp_notCSUEB$Sustainability.Planning....)-error_sp ##change after subcategory
+
+right_sp<- mean(cp_notCSUEB$Sustainability.Planning....)+error_sp ##change after subcategory
+
+
+
+##adding values for subcategory
+confinf_table_sp<-data.frame(subcategory="Sustainability_Planning",CI_left=left_sp,CI_right=right_sp,CSUEB_val=cp_CSUEB$Sustainability.Planning....)##change after subcategory
+
+##binding row in the data frame
+confinf_table<-rbind(confinf_table_sp,confinf_table)##change after subcategory
+
+##Inclusive.and.Participatory.Governance....
+error_ipg<- qt(0.95,df=length(cp_notCSUEB$Inclusive.and.Participatory.Governance....)-1)*sd(cp_notCSUEB$Inclusive.and.Participatory.Governance....)/sqrt(length(cp_notCSUEB$Inclusive.and.Participatory.Governance....))#change after subcategory
+
+left_ipg <- mean(cp_notCSUEB$Inclusive.and.Participatory.Governance....)-error_ipg ##change after subcategory
+
+right_ipg<- mean(cp_notCSUEB$Inclusive.and.Participatory.Governance....)+error_ipg ##change after subcategory
+
+
+
+##adding values for subcategory
+confinf_table_ipg<-data.frame(subcategory="Inclusive.and.Participatory.Governance",CI_left=left_ipg,CI_right=right_ipg,CSUEB_val=cp_CSUEB$Inclusive.and.Participatory.Governance....)##change after subcategory
+
+##binding row in the data frame
+confinf_table<-rbind(confinf_table_ipg,confinf_table)##change after subcategory
+confinf_table
+
+
+```
+
+```{r}
+#Diversity and Affordability 
+
+
+da_notCSUEB<-pa_dat_da%>%
+filter(Institution!="California State University, East Bay")#change after category
+
+da_CSUEB<-pa_dat_da %>%
+filter(Institution=="California State University, East Bay")#change after category
+
+##Diversity.and.Equity.Coordination....
+error_dec<- qt(0.95,df=length(da_notCSUEB$Diversity.and.Equity.Coordination....)-1)*sd(da_notCSUEB$Diversity.and.Equity.Coordination....)/sqrt(length(da_notCSUEB$Diversity.and.Equity.Coordination....))#change after subcategory
+
+left_dec <- mean(da_notCSUEB$Diversity.and.Equity.Coordination....)-error_dec ##change after subcategory
+
+right_dec<- mean(da_notCSUEB$Diversity.and.Equity.Coordination....)+error_dec ##change after subcategory
+
+
+
+##adding values for subcategory
+confinf_table_dec<-data.frame(subcategory="Diversity.and.Equity.Coordination",CI_left=left_dec,CI_right=right_dec,CSUEB_val=da_CSUEB$Diversity.and.Equity.Coordination....)##change after subcategory
+
+##binding row in the data frame
+confinf_table<-rbind(confinf_table_dec,confinf_table)##change after subcategory
+
+
+
+##Assessing.Diversity.and.Equity....
+error_ade<- qt(0.95,df=length(da_notCSUEB$Assessing.Diversity.and.Equity....)-1)*sd(da_notCSUEB$Assessing.Diversity.and.Equity....)/sqrt(length(da_notCSUEB$Assessing.Diversity.and.Equity....))#change after subcategory
+
+left_ade <- mean(da_notCSUEB$Assessing.Diversity.and.Equity....)-error_ade ##change after subcategory
+
+right_ade<- mean(da_notCSUEB$Assessing.Diversity.and.Equity....)+error_ade ##change after subcategory
+
+
+
+##adding values for subcategory
+confinf_table_ade<-data.frame(subcategory="Assessing.Diversity.and.Equity",CI_left=left_ade,CI_right=right_ade,CSUEB_val=da_CSUEB$Assessing.Diversity.and.Equity....)##change after subcategory
+
+##binding row in the data frame
+confinf_table<-rbind(confinf_table_ade,confinf_table)##change after subcategory
+
+
+##Support.for.Underrepresented.Groups....
+error_sug<- qt(0.95,df=length(da_notCSUEB$Support.for.Underrepresented.Groups....)-1)*sd(da_notCSUEB$Support.for.Underrepresented.Groups....)/sqrt(length(da_notCSUEB$Support.for.Underrepresented.Groups....))#change after subcategory
+
+left_sug <- mean(da_notCSUEB$Support.for.Underrepresented.Groups....)-error_sug ##change after subcategory
+
+right_sug<- mean(da_notCSUEB$Support.for.Underrepresented.Groups....)+error_sug ##change after subcategory
+
+
+
+##adding values for subcategory
+confinf_table_sug<-data.frame(subcategory="Support.for.Underrepresented.Groups",CI_left=left_sug,CI_right=right_sug,CSUEB_val=da_CSUEB$Support.for.Underrepresented.Groups....)##change after subcategory
+
+##binding row in the data frame
+confinf_table<-rbind(confinf_table_sug,confinf_table)##change after subcategory
+
+##Affordability.and.Access....
+error_aa<- qt(0.95,df=length(da_notCSUEB$Affordability.and.Access....)-1)*sd(da_notCSUEB$Affordability.and.Access....)/sqrt(length(da_notCSUEB$Affordability.and.Access....))#change after subcategory
+
+left_aa <- mean(da_notCSUEB$Affordability.and.Access....)-error_aa ##change after subcategory
+
+right_aa<- mean(da_notCSUEB$Affordability.and.Access....)+error_aa ##change after subcategory
+
+
+
+##adding values for subcategory
+confinf_table_aa<-data.frame(subcategory="Affordability.and.Access",CI_left=left_aa,CI_right=right_aa,CSUEB_val=da_CSUEB$Affordability.and.Access....)##change after subcategory
+
+##binding row in the data frame
+confinf_table<-rbind(confinf_table_aa,confinf_table)##change after subcategory
+confinf_table
+
+```
+
+```{r}
+# Investment and finance
+
+
+if_notCSUEB<-pa_dat_if%>%
+filter(Institution!="California State University, East Bay")#change after category
+
+if_CSUEB<-pa_dat_if %>%
+filter(Institution=="California State University, East Bay")#change after category
+
+##Committee.on.Investor.Responsibility....
+error_cir<- qt(0.95,df=length(if_notCSUEB$Committee.on.Investor.Responsibility....)-1)*sd(if_notCSUEB$Committee.on.Investor.Responsibility....)/sqrt(length(if_notCSUEB$Committee.on.Investor.Responsibility....))#change after subcategory
+
+left_cir <- mean(if_notCSUEB$Committee.on.Investor.Responsibility....)-error_cir ##change after subcategory
+
+right_cir<- mean(if_notCSUEB$Committee.on.Investor.Responsibility....)+error_cir ##change after subcategory
+
+
+
+##adding values for subcategory
+confinf_table_cir<-data.frame(subcategory="Committee.on.Investor.Responsibility",CI_left=0,CI_right=right_cir,CSUEB_val=if_CSUEB$Committee.on.Investor.Responsibility....)##change after subcategory
+
+##binding row in the data frame
+confinf_table<-rbind(confinf_table_cir,confinf_table)##change after subcategory
+
+
+
+##Sustainable.Investment....
+error_si<- qt(0.95,df=length(if_notCSUEB$Sustainable.Investment....)-1)*sd(if_notCSUEB$Sustainable.Investment....)/sqrt(length(if_notCSUEB$Sustainable.Investment....))#change after subcategory
+
+left_si <- mean(if_notCSUEB$Sustainable.Investment....)-error_si ##change after subcategory
+
+right_si<- mean(if_notCSUEB$Sustainable.Investment....)+error_si ##change after subcategory
+
+
+
+##adding values for subcategory
+confinf_table_si<-data.frame(subcategory="Sustainable.Investment",CI_left=left_si,CI_right=right_si,CSUEB_val=if_CSUEB$Sustainable.Investment....)##change after subcategory
+
+##binding row in the data frame
+confinf_table<-rbind(confinf_table_si,confinf_table)##change after subcategory
+
+
+
+##Investment.Disclosure....
+error_id<- qt(0.95,df=length(if_notCSUEB$Investment.Disclosure....)-1)*sd(if_notCSUEB$Investment.Disclosure....)/sqrt(length(if_notCSUEB$Investment.Disclosure....))#change after subcategory
+
+left_id <- mean(if_notCSUEB$Investment.Disclosure....)-error_id ##change after subcategory
+
+right_id<- mean(if_notCSUEB$Investment.Disclosure....)+error_id ##change after subcategory
+
+
+
+##adding values for subcategory
+confinf_table_id<-data.frame(subcategory="Investment.Disclosure",CI_left=left_id,CI_right=right_id,CSUEB_val=if_CSUEB$Investment.Disclosure....)##change after subcategory
+
+##binding row in the data frame
+confinf_table<-rbind(confinf_table_id,confinf_table)##change after subcategory
+confinf_table
+
+#colnames(pa_dat)
+```
+
+```{r}
+#Wellbeing and work
+
+
+
+ww_notCSUEB<-pa_dat_ww%>%
+filter(Institution!="California State University, East Bay")#change after category
+
+ww_CSUEB<-pa_dat_ww%>%
+filter(Institution=="California State University, East Bay")#change after category
+
+##Employee.Compensation....
+error_ec<- qt(0.95,df=length(ww_notCSUEB$Employee.Compensation....)-1)*sd(ww_notCSUEB$Employee.Compensation....)/sqrt(length(ww_notCSUEB$Employee.Compensation....))#change after subcategory
+
+left_ec <- mean(ww_notCSUEB$Employee.Compensation....)-error_ec ##change after subcategory
+
+right_ec<- mean(ww_notCSUEB$Employee.Compensation....)+error_ec ##change after subcategory
+
+
+
+##adding values for subcategory
+confinf_table_ec<-data.frame(subcategory="Employee.Compensation",CI_left=left_ec,CI_right=right_ec,CSUEB_val=ww_CSUEB$Employee.Compensation....)##change after subcategory
+
+##binding row in the data frame
+confinf_table<-rbind(confinf_table_ec,confinf_table)##change after subcategory
+
+
+
+##Assessing.Employee.Satisfaction....
+error_aes<- qt(0.95,df=length(ww_notCSUEB$Assessing.Employee.Satisfaction....)-1)*sd(ww_notCSUEB$Assessing.Employee.Satisfaction....)/sqrt(length(ww_notCSUEB$Assessing.Employee.Satisfaction....))#change after subcategory
+
+left_aes <- mean(ww_notCSUEB$Assessing.Employee.Satisfaction....)-error_aes ##change after subcategory
+
+right_aes<- mean(ww_notCSUEB$Assessing.Employee.Satisfaction....)+error_aes ##change after subcategory
+
+
+
+##adding values for subcategory
+confinf_table_aes<-data.frame(subcategory="Assessing.Employee.Satisfaction",CI_left=left_aes,CI_right=right_aes,CSUEB_val=ww_CSUEB$Assessing.Employee.Satisfaction....)##change after subcategory
+
+##binding row in the data frame
+confinf_table<-rbind(confinf_table_aes,confinf_table)##change after subcategory
+
+
+##Wellness.Program....
+error_wp<- qt(0.95,df=length(ww_notCSUEB$Wellness.Program....)-1)*sd(ww_notCSUEB$Wellness.Program....)/sqrt(length(ww_notCSUEB$Wellness.Program....))#change after subcategory
+
+left_wp <- mean(ww_notCSUEB$Wellness.Program....)-error_wp ##change after subcategory
+
+right_wp<- mean(ww_notCSUEB$Wellness.Program....)+error_wp ##change after subcategory
+
+
+
+##adding values for subcategory
+confinf_table_wp<-data.frame(subcategory="Wellness.Program",CI_left=left_wp,CI_right=right_wp,CSUEB_val=ww_CSUEB$Wellness.Program....)##change after subcategory
+
+##binding row in the data frame
+confinf_table<-rbind(confinf_table_wp,confinf_table)##change after subcategory
+
+##Workplace.Health.and.Safety....
+error_whs<- qt(0.95,df=length(ww_notCSUEB$Workplace.Health.and.Safety....)-1)*sd(ww_notCSUEB$Workplace.Health.and.Safety....)/sqrt(length(ww_notCSUEB$Workplace.Health.and.Safety....))#change after subcategory
+
+left_whs <- mean(ww_notCSUEB$Workplace.Health.and.Safety....)-error_whs ##change after subcategory
+
+right_whs<- mean(ww_notCSUEB$Workplace.Health.and.Safety....)+error_whs ##change after subcategory
+
+
+
+##adding values for subcategory
+confinf_table_whs<-data.frame(subcategory="Workplace.Health.and.Safety",CI_left=left_whs,CI_right=right_whs,CSUEB_val=ww_CSUEB$Workplace.Health.and.Safety....)##change after subcategory
+
+##binding row in the data frame
+confinf_table<-rbind(confinf_table_whs,confinf_table)##change after subcategory
+confinf_table%>%arrange(CSUEB_val)
+ggplot(confinf_table)+
+  geom_crossbar(aes(x=subcategory,y=(CI_left+CI_right)/2,ymin=CI_left,ymax=CI_right),xlab="",ylab="mean")+
+  geom_point(aes(x=subcategory,y=CSUEB_val),col="red") + 
+  coord_flip()+
+  ggtitle("Planning and Administration")+ylab("mean")
+
+
+```
+#Climate Action Plan
+##PA 2,3,4
+```{r}
+pa_dat_cp<-pa_dat%>%select(Institution,Star.category,Sustainability.Planning....,Inclusive.and.Participatory.Governance....,Reporting.Assurance....)
+#pa_dat_cp
+
+pa_dat_cp_reshaped<-pa_dat_cp%>%
+  gather(cp_subcategory,score,Sustainability.Planning....,Inclusive.and.Participatory.Governance....,Reporting.Assurance....)%>%
+   mutate(PA_credits= NA,
+                    PA_credits=ifelse(cp_subcategory=="Sustainability.Planning....",
+                                    "PA-2: Sustainability Planning",
+                                   PA_credits),
+           PA_credits=ifelse(cp_subcategory=="Inclusive.and.Participatory.Governance....",
+                                    "PA-3: Participatory Governance",
+                                   PA_credits),
+           PA_credits=ifelse(cp_subcategory=="Reporting.Assurance....",
+                                    "PA-4: Diversity and Equity Coordination",
+                                   PA_credits)) %>%
+    mutate(star_cat=ifelse(Institution=="California State University, East Bay", "CSUEB",as.character(Star.category)))
+
+##View(pa_dat_cp_reshaped)
+pa_dat_cp_reshaped$star_cat <- factor(pa_dat_cp_reshaped$star_cat,
+                                               levels=c("bronze","silver","gold","CSUEB"))
+ggplot(pa_dat_cp_reshaped) +
+  geom_boxplot(aes(x=PA_credits, y=score), color="red") +
+  geom_jitter(aes(x=PA_credits, y=score, color=star_cat, shape=star_cat, size=star_cat)) +
+  scale_shape_manual(name="Star Rating",
+                     values=c("bronze"=1,
+                              "silver"=1,
+                              "gold"=1,
+                              "CSUEB"=4)) +
+    scale_size_manual(name="Star Rating",
+                     values=c("bronze"=3,
+                              "silver"=3,
+                              "gold"=3,
+                              "CSUEB"=4)) +
+    scale_color_manual(name="Star Rating",
+                     values=c("bronze"="darkred",
+                              "silver"="gray47",
+                              "gold"="orange",
+                              "CSUEB"="#ff0000"))+
+  ggtitle("Planning and Administration")+
+  coord_flip()+ylab("Percentage of total score")
+head(pa_dat)
+```
+##PA 9,10,11
+```{r}
+pa_dat_cp<-pa_dat%>%select(Institution,Star.category,Sustainable.Investment....,Investment.Disclosure....,Employee.Compensation....)
+#pa_dat_cp
+
+pa_dat_cp_reshaped<-pa_dat_cp%>%
+  gather(cp_subcategory,score,Sustainable.Investment....,Investment.Disclosure....,Employee.Compensation....)%>%
+   mutate(PA_credits= NA,
+                    PA_credits=ifelse(cp_subcategory=="Sustainable.Investment....",
+                                    "PA-9: Sustainable Investment",
+                                   PA_credits),
+           PA_credits=ifelse(cp_subcategory=="Investment.Disclosure....",
+                                    "PA-10: Investment Disclosure",
+                                   PA_credits),
+           PA_credits=ifelse(cp_subcategory=="Employee.Compensation....",
+                                    "PA-11: Employee Compensation",
+                                   PA_credits)) %>%
+    mutate(star_cat=ifelse(Institution=="California State University, East Bay", "CSUEB",as.character(Star.category)))
+
+##View(pa_dat_cp_reshaped)
+pa_dat_cp_reshaped$star_cat <- factor(pa_dat_cp_reshaped$star_cat,
+                                               levels=c("bronze","silver","gold","CSUEB"))
+ggplot(pa_dat_cp_reshaped) +
+  geom_boxplot(aes(x=PA_credits, y=score), color="red") +
+  geom_jitter(aes(x=PA_credits, y=score, color=star_cat, shape=star_cat, size=star_cat)) +
+  scale_shape_manual(name="Star Rating",
+                     values=c("bronze"=1,
+                              "silver"=1,
+                              "gold"=1,
+                              "CSUEB"=4)) +
+    scale_size_manual(name="Star Rating",
+                     values=c("bronze"=3,
+                              "silver"=3,
+                              "gold"=3,
+                              "CSUEB"=4)) +
+    scale_color_manual(name="Star Rating",
+                     values=c("bronze"="darkred",
+                              "silver"="gray47",
+                              "gold"="orange",
+                              "CSUEB"="#ff0000"))+
+  ggtitle("Planning and Administration")+
+  coord_flip()
+```
+##PLOTLY Graph
+```{r}
+library(plotly)
+pa_ly<-ggplot(pa_dat_cp_reshaped) +
+  geom_boxplot(aes(x=PA_credits, y=score), color="red") +
+  geom_jitter(aes(x=PA_credits, y=score, color=star_cat, shape=star_cat, size=star_cat,label=Institution)) +
+  scale_shape_manual(name="Star Rating",
+                     values=c("bronze"=1,
+                              "silver"=1,
+                              "gold"=1,
+                              "CSUEB"=4)) +
+    scale_size_manual(name="Star Rating",
+                     values=c("bronze"=3,
+                              "silver"=3,
+                              "gold"=3,
+                              "CSUEB"=4)) +
+    scale_color_manual(name="Star Rating",
+                     values=c("bronze"="darkred",
+                              "silver"="gray47",
+                              "gold"="orange",
+                              "CSUEB"="#ff0000"))+
+  ggtitle("Planning and Administration")+
+  coord_flip()
+ggplotly(pa_ly)
+```
+
